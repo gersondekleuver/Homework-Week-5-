@@ -1,6 +1,5 @@
 ---
-title: "Portifolio from Gerson de Kleuver"
-date: "22/02/2021"
+title: "Gerson de Kleuver"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -30,8 +29,25 @@ Introduction
 SideBar {.sidebar}
 --------------
 
-More text TBA
+#### Data sets
 
+[Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96):
+
+* Songs:
+
+* Release date:
+
+[Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d):
+
+* Songs:
+
+* Release date:
+
+[League of Legends Official Playlist](https://open.spotify.com/playlist/37i9dQZF1DWVi45nh2EuPP?si=2829a0729b984f8e)
+
+* Songs:
+
+* Release date:
 
 Column
 --------------

@@ -1,29 +1,111 @@
-# League of legends Corpus
-# Gerson de kleuver 
-# 15-2-2021
+---
+title: "Gerson de Kleuver"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    storyboard: true
+    theme: flatly
+    highlight: monochrome
+---
 
-```{r}
-
+```{r preprocessing, message = FALSE, include=FALSE}
+library(dplyr)
+library(ggplot2)
 library(tidyverse)
+library(flexdashboard)
 library(spotifyr)
+library(plotly)
+
 LP <- get_playlist_audio_features("", "37i9dQZF1DWVi45nh2EuPP")
+GP <- get_playlist_audio_features("", "4bx5c78CAquCWNE4tw1reY")
+RP <- get_playlist_audio_features("", "5AHH67GYsljwoB1q6UGvWg")
 
-LP <-
-  bind_rows(
-    LP %>% mutate(category = "League of legends"),
-  )
-
-
-
-LP %>%
-  ggplot(aes(x = category, y = acousticness)) +
-  geom_violin()
-
-LP %>% ggplot(aes(x = valence, y = energy, color=loudness)) + geom_jitter() + geom_smooth()
-
-LP %>%
-  ggplot(aes(x = energy)) +
-  geom_histogram(binwidth = 0.1, fill="white",color="black") +
-  facet_wrap(~category)
 
 ```
+
+Introduction
+============
+
+SideBar {.sidebar}
+--------------
+
+#### Data sets
+
+[Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96):
+
+* Songs:
+
+* Release date:
+
+[Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d):
+
+* Songs:
+
+* Release date:
+
+[League of Legends Official Playlist](https://open.spotify.com/playlist/37i9dQZF1DWVi45nh2EuPP?si=2829a0729b984f8e)
+
+* Songs:
+
+* Release date:
+
+Column
+--------------
+Gaming music is a broad term which describes a group of music that is often related to the playing of watching of video games. It as a category has grown inmensely, as music and playlists carrying such label is being uploaded every day in large quantities to youtube and spotify.
+
+More text TBA
+
+
+
+
+Data exploration {.storyboard}
+===============
+### Comparison between the playlists
+```{r}
+XP <-
+  bind_rows(
+    LP %>% mutate(playlist = "League of legends playlist"),
+    GP %>% mutate(playlist = "Gaming playlist"),
+    RP%>% mutate(playlist = "Magic Music EDM Gaming Playlist")
+  )
+
+```
+``` {r}
+AuPlot <- XP %>%
+  ggplot(aes(x = playlist, y = acousticness, fill=playlist)) +
+  geom_violin() +
+  ggtitle("Acousticness of gaming playlists") + theme(legend.position = "none") 
+ggplotly(AuPlot)
+```
+***
+
+More text TBA
+
+
+### Correlations between gaming playlists
+````{r}
+
+pointPLOT <- XP %>%
+  ggplot(aes(x = valence, fill=playlist,color=playlist,y = danceability, alpha=energy)) +
+  geom_point() +
+  ggtitle("Correlations between gaming playlists") +
+  facet_wrap(~playlist) + theme(legend.position = "none") +
+  geom_smooth()
+                                
+ggplotly(pointPLOT)
+```
+
+***
+
+More text TBA
+
+### Chroma gram of league of legends
+
+***
+Chroma gram TBA
+
+
+Conclusion
+============
+
+More text TBA
