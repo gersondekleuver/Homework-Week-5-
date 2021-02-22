@@ -1,23 +1,19 @@
 library(tidyverse)
 library(spotifyr)
-PL <- get_playlist_audio_features("", "7JXJKP3xMvIMbEBBGApTPQ")
+library(compmus)
 
-PL %>%
-  summarise(
-    mean_speechiness = mean(speechiness),
-    mean_acousticness = mean(acousticness),
-    mean_liveness = mean(liveness),
-    sd_speechiness = sd(speechiness),
-    sd_acousticness = sd(acousticness),
-    sd_liveness = sd(liveness),
-    median_speechiness = median(speechiness),
-    median_acousticness = median(acousticness),
-    median_liveness = median(liveness),
-    mad_speechiness = mad(speechiness),
-    mad_acousticness = mad(acousticness),
-    mad_liveness = mad(liveness)
+LP <- get_playlist_audio_features("", "37i9dQZF1DWVi45nh2EuPP")
+
+LP <-
+  bind_rows(
+    LP %>% mutate(category = "League of legends Playlist"),
   )
-PL %>%
-  filter(track.name == trac)
 
-PL %>% ggplot(aes(x = valence, y = energy)) + geom_point() + geom_smooth()
+
+
+LP %>%
+  ggplot(aes(x = category, y = acousticness)) +
+  geom_violin() +
+  ggtitle("Acousticness of the LoL playlist")
+
+LP %>% ggplot(aes(x = valence, y = energy, color=loudness)) + geom_jitter() + geom_smooth() + ggtitle("Valence to Enegry of the LoL playlist")
