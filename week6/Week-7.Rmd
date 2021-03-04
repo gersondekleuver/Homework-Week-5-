@@ -19,7 +19,17 @@ library(plotly)
 
 LP <- get_playlist_audio_features("", "37i9dQZF1DWVi45nh2EuPP")
 GP <- get_playlist_audio_features("", "4bx5c78CAquCWNE4tw1reY")
-RP <- get_playlist_audio_features("", "5AHH67GYsljwoB1q6UGvWg")
+MP <- get_playlist_audio_features("", "5AHH67GYsljwoB1q6UGvWg")
+UGP <- get_playlist_audio_features("", "37i9dQZF1DWYN9NBqvY7Tx")
+
+
+XP <-
+  bind_rows(
+    LP %>% mutate(playlist = "League of legends playlist"),
+    GP %>% mutate(playlist = "Gaming playlist"),
+    MP %>% mutate(playlist = "Magic Music EDM Gaming Playlist"),
+    UGP %>% mutate(playlist = "Ultra Gaming")
+  )
 
 ```
 
@@ -29,31 +39,43 @@ Introduction
 SideBar {.sidebar}
 --------------
 
-#### Data sets
+#### Gaming data sets:
+
 
 [Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96):
 
-* Songs:
+* Songs: 247 
 
-* Release date:
+* By: Magic records
 
 [Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d):
 
-* Songs:
+* Songs: 98
 
-* Release date:
+* By: Gaming Playlist
 
-[League of Legends Official Playlist](https://open.spotify.com/playlist/37i9dQZF1DWVi45nh2EuPP?si=2829a0729b984f8e)
+[League of Legends Official Playlist](https://open.spotify.com/playlist/37i9dQZF1DWVi45nh2EuPP?si=2829a0729b984f8e):
 
-* Songs:
+* Songs: 166
 
-* Release date:
+* By: Spotify
+
+
+[Ultra Gaming](https://open.spotify.com/playlist/37i9dQZF1DWYN9NBqvY7Tx):
+
+* Songs: 100
+
+* By: Spotify
+
+
 
 Column
 --------------
-Gaming music is a broad term which describes a group of music that is often related to the playing of watching of video games. It as a category has grown inmensely, as music and playlists carrying such label is being uploaded every day in large quantities to youtube and spotify.
-
-More text TBA
+Gaming music is a broad term which describes a group of music that is often related to the playing of watching of video games. It as a category has grown immensely, as music and playlists carrying such label is being uploaded every day in large quantities to youtube and spotify.
+  
+  A very notible gaming playlist was released by Spotify in 2020, the official League of Legends playlist. This playlist contained big songs made suchs as [Imagine Dragons's 10th most popular track Warriors](https://open.spotify.com/track/1sWeSMifj6Z6kZyI6z3bRc?si=39a6e0d8cd244d30) which was specifically made to promote the League of legends world championship in 2014. However the playlist also contains many lesser known songs and they belong to many different gernes. This is fairly typical with gaming playlists as the songs within such playlist range anywhere from indie to darksynth. 
+  
+  Thus one could ask the question if correlations exist between the tracks within this playlist that make them recognizable as being a gaming track. Another question 
 
 
 
@@ -61,15 +83,7 @@ More text TBA
 Data exploration {.storyboard}
 ===============
 ### Comparison between the playlists
-```{r}
-XP <-
-  bind_rows(
-    LP %>% mutate(playlist = "League of legends playlist"),
-    GP %>% mutate(playlist = "Gaming playlist"),
-    RP%>% mutate(playlist = "Magic Music EDM Gaming Playlist")
-  )
 
-```
 ``` {r}
 AuPlot <- XP %>%
   ggplot(aes(x = playlist, y = acousticness, fill=playlist)) +
@@ -123,9 +137,12 @@ Warriors %>%
   theme_minimal() +
   scale_fill_viridis_c()
 ```
+
 ***
+
 This is league of legends most iconic song.
-TBA
+
+
 
 ### Self-Similarity Matrice of Taking over
 
@@ -176,7 +193,9 @@ bind_rows(
 
 ```
 
+***
 
+Tba
 
 
 Conclusion
