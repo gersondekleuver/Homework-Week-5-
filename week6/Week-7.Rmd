@@ -31,6 +31,10 @@ XP <-
     UGP %>% mutate(playlist = "Ultra Gaming")
   )
 
+
+genre <- c("Rap", "Heavy-Metal", "Alternative Rock", "R&B", "Hip-hop", "Pop", "EDM", "Classic Rock", "Contemporary Rock", "New Age", "Folk", "Adult contemporary", "Classical", "Country", "Oldies", "Raggeton", "Latin", "Smooth Jazz", "Raggae", "Holiday")
+index <- c(1.21, 1.20, 1.19, 1.19, 1.13, 1.10, 1.09, 1.08, 1.06, 1.02, 1.01, 0.98, 0.98, 0.97, 0.96, 0.96, 0.95, 0.95, 0.94, 0.93)
+df <- data.frame(genre, index)
 ```
 
 Introduction
@@ -46,11 +50,15 @@ SideBar {.sidebar}
 
 * Songs: 247 
 
+* Likes: 474.991
+
 * By: Magic records
 
 [Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d):
 
 * Songs: 98
+
+* Likes: 212.732
 
 * By: Gaming Playlist
 
@@ -58,31 +66,69 @@ SideBar {.sidebar}
 
 * Songs: 166
 
-* By: Spotify
+* Likes: 289.577
 
+* By: Spotify
 
 [Ultra Gaming](https://open.spotify.com/playlist/37i9dQZF1DWYN9NBqvY7Tx):
 
 * Songs: 100
 
+* Likes: 22.233
+
 * By: Spotify
-
-
 
 Column
 --------------
 Gaming music is a broad term which describes a group of music that is often related to the playing of watching of video games. It as a category has grown immensely, as music and playlists carrying such label is being uploaded every day in large quantities to youtube and spotify.
   
-  A very notible gaming playlist was released by Spotify in 2020, the official League of Legends playlist. This playlist contained big songs made suchs as [Imagine Dragons's 10th most popular track Warriors](https://open.spotify.com/track/1sWeSMifj6Z6kZyI6z3bRc?si=39a6e0d8cd244d30) which was specifically made to promote the League of legends world championship in 2014. However the playlist also contains many lesser known songs and they belong to many different gernes. This is fairly typical with gaming playlists as the songs within such playlist range anywhere from indie to darksynth. 
+  A very notible gaming playlist was released by Spotify in 2020, the official League of Legends playlist. This playlist contained big songs made suchs as [Imagine Dragons's 10th most popular track Warriors](https://open.spotify.com/track/1sWeSMifj6Z6kZyI6z3bRc?si=39a6e0d8cd244d30) which was specifically made to promote the League of legends world championship in 2014. However the playlist also contains many lesser known songs and they belong to many different genres. This is fairly typical with gaming playlists as the songs within such playlist range anywhere from indie to darksynth. 
   
-  Thus one could ask the question if correlations exist between the tracks within this playlist that make them recognizable as being a gaming track. Another question 
+  Thus one could ask the question if correlations exist between the tracks within this playlist that make them recognizable as being a gaming track. 
+  
+  This playlist also contains all songs that were officially published by League of Legends, these "official" tracks are note worthy since some of them use audio of the game. Perhaps these songs have interesting similarities. These songs include:
+  
+  * [Warriors (2020 version)](https://open.spotify.com/track/3f4fc8c8unrQeKecmUPEDR?si=63276ad4a4564a17)
+  
+  * [Warriors (2014 version)](https://open.spotify.com/track/1lgN0A2Vki2FTON5PYq42m?si=dd0a95a23d5c48c1)
+  
+  * [Legends never die](https://open.spotify.com/track/1FpVJ7HpZInE2GvhVE2TwT?si=0ffca8d599cc41d4)
+  
+  * [RISE](https://open.spotify.com/track/69Sy7207dnixZ6w7RSV9Kb?si=db38cd8a58a8415b)
+  
+  * [Phoenix](https://open.spotify.com/track/6zAiRKvAMlXHxEtyO4yxIO?si=49498516b2e7491b)
+  
+  * [Take over](https://open.spotify.com/track/7asFSf2pkWNEG3E5EuN1QR?si=91587d78bc0c4980)
+  
+  * [Awaken](https://open.spotify.com/track/3jevgr3fYdv9wYO3IDJq2a?si=46970ba4b74843dd)
+  
+The genres assosiated with gaming music might also be of interest.
+  [A study](https://www.billboard.com/articles/business/9423462/gamers-top-20-favorite-music-genres) performed by Nielsen Music surveyed 3757 participants measured how many "gamers" listen to a genre compared to "non gamers" to come up with an index.
+  
+```{r}
+histostats <- df %>% 
+  arrange(index) %>%
+  ggplot(aes(x = genre,y=index)) +
+  geom_point(size=3) +
+  coord_flip() + 
+  geom_segment(aes(x=genre, 
+                   xend=genre, 
+                   y=1, 
+                   yend=index)) +
+  geom_hline(yintercept=1) +
+  ggtitle("Index of genres listend to by gamers") +
+  labs(title="Index of genres listend to by gamers") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+ggplotly(histostats)
+```
+It might be interesing to look between the diffrence of a popular pop song within the league of legends playist and another popular song from another genre.
 
 
-
+A question remains, is the playlist representative of gaming music in the first place? Since it contains mostly of electronic dance and indie music. To valdiate any claims in this portifolio 3 additional popular playlists are used to hopefully be able to draw meaningfull comparisons. 2 of these playlists ("EDM Gaming Playlist":474.991 likes and "Gaming playlist": 212.732 likes) are very popular on spotify and are published and composed by spotify users while the other playlist ("Ultra Gaming": 22.229 likes) is much less popular but officially published by spotify. 
 
 Data exploration {.storyboard}
 ===============
-### Comparison between the playlists
+### How acoustic is the League of legends playlist?
 
 ``` {r}
 AuPlot <- XP %>%
@@ -93,15 +139,30 @@ ggplotly(AuPlot)
 ```
 ***
 
-More text TBA
+What is a characteristic feature of a gaming playlist? One of the immediate things that come to mind is the use of electric instruments such as a synthesizer. Songs such as [Maniac](https://open.spotify.com/album/2m7pyAC9xDlLBPjBFqqrNV?highlight=spotify:track:2IxhiriDpu4iBnXZb3ytXN) by Carpenter Brut in the league of legends playlist heavily rely on the use of electronic instruments. Is this common in all gaming playlists? If so is the League of legends playlist an outlier?
+
+---
+
+Spotify has labeled their songs on **Acousticness** with a value ranging from 0 to 1, 0 indicates that a track is not acoustic at all while 1 means it is a fully acoustic track. 
 
 
-### Correlations between gaming playlists
+The violin plot on the left shows several things:
+
+* all these playlists constist of mostly non acoustic tracks
+
+* The playlists provided by spotify (Ultra gaming and League of Legends) have even less acousticness
+
+* The league of legends playlist has some outliers, however is mostly non acoustic.
+
+The violin plot makes use of **density** to describe the proportion of tracks on a certain level of Acousticness. It is remarkable that the League of legends playlist is nearly completely non acoustic. 
+
+
+### How energetic is the League of Legends playlist?
 ````{r}
 
 pointPLOT <- XP %>%
   ggplot(aes(x = valence, fill=playlist,color=playlist,y = danceability, alpha=energy)) +
-  geom_point() +
+  geom_point(size=2) +
   ggtitle("Correlations between gaming playlists") +
   facet_wrap(~playlist) + theme(legend.position = "none") +
   geom_smooth()
@@ -111,7 +172,14 @@ ggplotly(pointPLOT)
 
 ***
 
-More text TBA
+Another common assumption is that gaming music is generally energetic. How does the League of legends playlist compare? 
+
+Spotify provides several audio features which are of interest. **Energy** describes how noicy a track is, **Valence** describes the positiveness  of a song and finally **Danceability** discribes how dancable a song is. All these features range with values between 0 and 1. 
+
+In the plot on the left these features were plotted on the left were energy was plotted in the alpha and color. Clearly visible is that the gaming songs are all not too positive with the majority of the tracks on all playlists are below a positivity value of 0.5. Another commonality between the playlists is that most tracks are above rather dancable. The league of legends playlist seems to align with the other playlists in these cases. In energy all these songs are also rather common. 
+
+
+
 
 ### Chroma gram of Warriors
 ```{r}
@@ -140,7 +208,7 @@ Warriors %>%
 
 ***
 
-This is league of legends most iconic song.
+Lets look at League of legends most poplar song, Warriors. It has had 2 releases, the 2014 release and the 2020 cover. Is there commonality between the two? 
 
 
 

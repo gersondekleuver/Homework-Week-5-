@@ -3,6 +3,9 @@ library(spotifyr)
 library(compmus)
 
 LP <- get_playlist_audio_features("", "37i9dQZF1DWVi45nh2EuPP")
+GP <- get_playlist_audio_features("", "4bx5c78CAquCWNE4tw1reY")
+RP <- get_playlist_audio_features("", "5AHH67GYsljwoB1q6UGvWg")
+
 
 LP <-
   bind_rows(
