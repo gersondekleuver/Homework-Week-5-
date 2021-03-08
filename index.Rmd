@@ -19,8 +19,22 @@ library(plotly)
 
 LP <- get_playlist_audio_features("", "37i9dQZF1DWVi45nh2EuPP")
 GP <- get_playlist_audio_features("", "4bx5c78CAquCWNE4tw1reY")
-RP <- get_playlist_audio_features("", "5AHH67GYsljwoB1q6UGvWg")
+MP <- get_playlist_audio_features("", "5AHH67GYsljwoB1q6UGvWg")
+UGP <- get_playlist_audio_features("", "37i9dQZF1DWYN9NBqvY7Tx")
 
+
+XP <-
+  bind_rows(
+    LP %>% mutate(playlist = "League of legends playlist"),
+    GP %>% mutate(playlist = "Gaming playlist"),
+    MP %>% mutate(playlist = "Magic Music EDM Gaming Playlist"),
+    UGP %>% mutate(playlist = "Ultra Gaming")
+  )
+
+
+genre <- c("Rap", "Heavy-Metal", "Alternative Rock", "R&B", "Hip-hop", "Pop", "EDM", "Classic Rock", "Contemporary Rock", "New Age", "Folk", "Adult contemporary", "Classical", "Country", "Oldies", "Raggeton", "Latin", "Smooth Jazz", "Raggae", "Holiday")
+index <- c(1.21, 1.20, 1.19, 1.19, 1.13, 1.10, 1.09, 1.08, 1.06, 1.02, 1.01, 0.98, 0.98, 0.97, 0.96, 0.96, 0.95, 0.95, 0.94, 0.93)
+df <- data.frame(genre, index)
 ```
 
 Introduction
@@ -29,47 +43,93 @@ Introduction
 SideBar {.sidebar}
 --------------
 
-#### Data sets
+#### Gaming data sets:
+
 
 [Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96):
 
-* Songs:
+* Songs: 247 
 
-* Release date:
+* Likes: 474.991
+
+* By: Magic records
 
 [Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d):
 
-* Songs:
+* Songs: 98
 
-* Release date:
+* Likes: 212.732
 
-[League of Legends Official Playlist](https://open.spotify.com/playlist/37i9dQZF1DWVi45nh2EuPP?si=2829a0729b984f8e)
+* By: Gaming Playlist
 
-* Songs:
+[League of Legends Official Playlist](https://open.spotify.com/playlist/37i9dQZF1DWVi45nh2EuPP?si=2829a0729b984f8e):
 
-* Release date:
+* Songs: 166
+
+* Likes: 289.577
+
+* By: Spotify
+
+[Ultra Gaming](https://open.spotify.com/playlist/37i9dQZF1DWYN9NBqvY7Tx):
+
+* Songs: 100
+
+* Likes: 22.233
+
+* By: Spotify
 
 Column
 --------------
-Gaming music is a broad term which describes a group of music that is often related to the playing of watching of video games. It as a category has grown inmensely, as music and playlists carrying such label is being uploaded every day in large quantities to youtube and spotify.
+Gaming music is a broad term which describes a group of music that is often related to the playing of watching of video games. It as a category has grown immensely, as music and playlists carrying such label is being uploaded every day in large quantities to youtube and spotify.
+  
+  A very notible gaming playlist was released by Spotify in 2020, the official League of Legends playlist. This playlist contained big songs made suchs as [Imagine Dragons's 10th most popular track Warriors](https://open.spotify.com/track/1sWeSMifj6Z6kZyI6z3bRc?si=39a6e0d8cd244d30) which was specifically made to promote the League of legends world championship in 2014. However the playlist also contains many lesser known songs and they belong to many different genres. This is fairly typical with gaming playlists as the songs within such playlist range anywhere from indie to darksynth. 
+  
+  Thus one could ask the question if correlations exist between the tracks within this playlist that make them recognizable as being a gaming track. 
+  
+  This playlist also contains all songs that were officially published by League of Legends, these "official" tracks are note worthy since some of them use audio of the game. Perhaps these songs have interesting similarities. These songs include:
+  
+  * [Warriors (2020 version)](https://open.spotify.com/track/3f4fc8c8unrQeKecmUPEDR?si=63276ad4a4564a17)
+  
+  * [Warriors (2014 version)](https://open.spotify.com/track/1lgN0A2Vki2FTON5PYq42m?si=dd0a95a23d5c48c1)
+  
+  * [Legends never die](https://open.spotify.com/track/1FpVJ7HpZInE2GvhVE2TwT?si=0ffca8d599cc41d4)
+  
+  * [RISE](https://open.spotify.com/track/69Sy7207dnixZ6w7RSV9Kb?si=db38cd8a58a8415b)
+  
+  * [Phoenix](https://open.spotify.com/track/6zAiRKvAMlXHxEtyO4yxIO?si=49498516b2e7491b)
+  
+  * [Take over](https://open.spotify.com/track/7asFSf2pkWNEG3E5EuN1QR?si=91587d78bc0c4980)
+  
+  * [Awaken](https://open.spotify.com/track/3jevgr3fYdv9wYO3IDJq2a?si=46970ba4b74843dd)
+  
+The genres assosiated with gaming music might also be of interest.
+  [A study](https://www.billboard.com/articles/business/9423462/gamers-top-20-favorite-music-genres) performed by Nielsen Music surveyed 3757 participants measured how many "gamers" listen to a genre compared to "non gamers" to come up with an index.
+  
+```{r}
+histostats <- df %>% 
+  arrange(index) %>%
+  ggplot(aes(x = genre,y=index)) +
+  geom_point(size=3) +
+  coord_flip() + 
+  geom_segment(aes(x=genre, 
+                   xend=genre, 
+                   y=1, 
+                   yend=index)) +
+  geom_hline(yintercept=1) +
+  ggtitle("Index of genres listend to by gamers") +
+  labs(title="Index of genres listend to by gamers") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+ggplotly(histostats)
+```
+It might be interesing to look between the diffrence of a popular pop song within the league of legends playist and another popular song from another genre.
 
-More text TBA
 
-
-
+A question remains, is the playlist representative of gaming music in the first place? Since it contains mostly of electronic dance and indie music. To valdiate any claims in this portifolio 3 additional popular playlists are used to hopefully be able to draw meaningfull comparisons. 2 of these playlists ("EDM Gaming Playlist":474.991 likes and "Gaming playlist": 212.732 likes) are very popular on spotify and are published and composed by spotify users while the other playlist ("Ultra Gaming": 22.229 likes) is much less popular but officially published by spotify. 
 
 Data exploration {.storyboard}
 ===============
-### Comparison between the playlists
-```{r}
-XP <-
-  bind_rows(
-    LP %>% mutate(playlist = "League of legends playlist"),
-    GP %>% mutate(playlist = "Gaming playlist"),
-    RP%>% mutate(playlist = "Magic Music EDM Gaming Playlist")
-  )
+### How acoustic is the League of legends playlist?
 
-```
 ``` {r}
 AuPlot <- XP %>%
   ggplot(aes(x = playlist, y = acousticness, fill=playlist)) +
@@ -79,15 +139,30 @@ ggplotly(AuPlot)
 ```
 ***
 
-More text TBA
+What is a characteristic feature of a gaming playlist? One of the immediate things that come to mind is the use of electric instruments such as a synthesizer. Songs such as [Maniac](https://open.spotify.com/album/2m7pyAC9xDlLBPjBFqqrNV?highlight=spotify:track:2IxhiriDpu4iBnXZb3ytXN) by Carpenter Brut in the league of legends playlist heavily rely on the use of electronic instruments. Is this common in all gaming playlists? If so is the League of legends playlist an outlier?
+
+---
+
+Spotify has labeled their songs on **Acousticness** with a value ranging from 0 to 1, 0 indicates that a track is not acoustic at all while 1 means it is a fully acoustic track. 
 
 
-### Correlations between gaming playlists
+The violin plot on the left shows several things:
+
+* all these playlists constist of mostly non acoustic tracks
+
+* The playlists provided by spotify (Ultra gaming and League of Legends) have even less acousticness
+
+* The league of legends playlist has some outliers, however is mostly non acoustic.
+
+The violin plot makes use of **density** to describe the proportion of tracks on a certain level of Acousticness. It is remarkable that the League of legends playlist is nearly completely non acoustic. 
+
+
+### How energetic is the League of Legends playlist?
 ````{r}
 
 pointPLOT <- XP %>%
   ggplot(aes(x = valence, fill=playlist,color=playlist,y = danceability, alpha=energy)) +
-  geom_point() +
+  geom_point(size=2) +
   ggtitle("Correlations between gaming playlists") +
   facet_wrap(~playlist) + theme(legend.position = "none") +
   geom_smooth()
@@ -97,17 +172,55 @@ ggplotly(pointPLOT)
 
 ***
 
-More text TBA
+Another common assumption is that gaming music is generally energetic. How does the League of legends playlist compare?  
 
-### Chroma gram of Warriors
+---
+
+Spotify provides several audio features which are of interest. **Energy** describes how noicy a track is, **Valence** describes the positiveness  of a song and finally **Danceability** discribes how dancable a song is. All these features range with values between 0 and 1. 
+
+In the plot on the left these features were plotted on the left were energy was plotted in the alpha and color. Clearly visible is that the gaming songs are all not too positive with the majority of the tracks on all playlists are below a positivity value of 0.5. Another commonality between the playlists is that most tracks are above rather dancable. The league of legends playlist seems to align with the other playlists in these cases. In energy all these songs are also rather common. 
+
+**TBA**
+
+
+### What can we tell from the most popular tracks?
 ```{r}
-Warriors <-
+Warriors_2020 <-
   get_tidy_audio_analysis("3f4fc8c8unrQeKecmUPEDR") %>%
   select(segments) %>%
   unnest(segments) %>%
   select(start, duration, pitches)
 
-Warriors %>%
+Warriors_2014 <-
+  get_tidy_audio_analysis("1sWeSMifj6Z6kZyI6z3bRc") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+Legends_never_die <-
+  get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+RISE <-
+  get_tidy_audio_analysis("69Sy7207dnixZ6w7RSV9Kb") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+
+
+
+TXP <-
+  bind_rows(
+    Warriors_2020 %>% mutate(track = "Warriors 2020"),
+    Warriors_2014 %>% mutate(track = "Warriors 2014"),
+    Legends_never_die %>% mutate(track = "Legends never die 2017"),
+    RISE %>% mutate(track = "RISE 2018")
+  )
+
+TXP %>%
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
   compmus_gather_chroma() %>% 
   ggplot(
@@ -121,17 +234,34 @@ Warriors %>%
   geom_tile() +
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  scale_fill_viridis_c()
-```
-***
-This is league of legends most iconic song.
-TBA
+  scale_fill_viridis_c() +
+  facet_wrap(~track) + theme(legend.position = "none")
 
-### Self-Similarity Matrice of Taking over
+
+```
+
+***
+
+Lets look at League of legends most iconic songs: Rise, Legends never die, and Warriors. Warriors has had 2 releases, the 2014 release and the 2020 cover. Are they similar in sound?
+
+---
+
+Lets take a look at both versions and the other tracks using a **chromagram**. A chromagram visualizes the pitches in a track on a certain time. The values range from 0 to 1, with 0 being an absence from a pitches entirely. The chromagram also gives a insight in the structure of a song, since certain pattern of pitches are being repeated mutliple times. 
+
+The chromagrams on the left differ in shapes, this is due to the tracks having different lengths.
+An interesting sight is that 3 track of the 4 tracks are mostly played in C and C#. All these songs are more directly made by Riot games, the studio behind League of legends. All 3 were made by the companies music studio "penta kill", while the original version of warriors from 2014 made by Imagine Dragons is very much different than its 2020 release. 
+
+Thus perhaps one could say that most recent gaming music has evolved in terms of C and C# usage.
+
+**TBA**
+
+
+
+### Structure of Legends never Die
 
 ```{r}
 TO <-
-  get_tidy_audio_analysis("7asFSf2pkWNEG3E5EuN1QR") %>%
+  get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT") %>%
   compmus_align(bars, segments) %>%
   select(bars) %>%
   unnest(bars) %>%
@@ -175,6 +305,220 @@ bind_rows(
   labs(x = "", y = "")
 
 ```
+
+***
+
+The previous Chromagrams were interesting as to indicate how the tone layout looks. However it failed to visualize the structure of the songs effectively. One could expect that even though they seem very different the underlying structure might be similar, since their tone usage is also similar and they were published by the same company.
+
+---
+
+To visualize the structure of a track effectively one could split a track in a visualization of the **chroma** (pitches) and a visualization of the **timbre**.  Timbre is the overall fidelity of sound. 
+The most effective way of plotting these is using a **self-similarity plot**. To create one the track is split in sections, then the pitches in a section are compared to all other sections this is done for all sections. If a section is very similar it is assigned a higher value than one which is very similar.
+
+---
+
+One can immediately see a checkerboard pattern in the timbre. It reveals a lot about the structure, one can see that the track is split into 4 parts in terms of timbre.
+
+**TBA**
+
+### Chordo gram
+
+
+```{r}
+circshift <- function(v, n) {
+  if (n == 0) v else c(tail(v, n), head(v, -n))
+}
+
+#      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
+major_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
+minor_chord <-
+  c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
+seventh_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+
+major_key <-
+  c(6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88)
+minor_key <-
+  c(6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
+
+chord_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:7", circshift(seventh_chord, 6),
+    "Gb:maj", circshift(major_chord, 6),
+    "Bb:min", circshift(minor_chord, 10),
+    "Db:maj", circshift(major_chord, 1),
+    "F:min", circshift(minor_chord, 5),
+    "Ab:7", circshift(seventh_chord, 8),
+    "Ab:maj", circshift(major_chord, 8),
+    "C:min", circshift(minor_chord, 0),
+    "Eb:7", circshift(seventh_chord, 3),
+    "Eb:maj", circshift(major_chord, 3),
+    "G:min", circshift(minor_chord, 7),
+    "Bb:7", circshift(seventh_chord, 10),
+    "Bb:maj", circshift(major_chord, 10),
+    "D:min", circshift(minor_chord, 2),
+    "F:7", circshift(seventh_chord, 5),
+    "F:maj", circshift(major_chord, 5),
+    "A:min", circshift(minor_chord, 9),
+    "C:7", circshift(seventh_chord, 0),
+    "C:maj", circshift(major_chord, 0),
+    "E:min", circshift(minor_chord, 4),
+    "G:7", circshift(seventh_chord, 7),
+    "G:maj", circshift(major_chord, 7),
+    "B:min", circshift(minor_chord, 11),
+    "D:7", circshift(seventh_chord, 2),
+    "D:maj", circshift(major_chord, 2),
+    "F#:min", circshift(minor_chord, 6),
+    "A:7", circshift(seventh_chord, 9),
+    "A:maj", circshift(major_chord, 9),
+    "C#:min", circshift(minor_chord, 1),
+    "E:7", circshift(seventh_chord, 4),
+    "E:maj", circshift(major_chord, 4),
+    "G#:min", circshift(minor_chord, 8),
+    "B:7", circshift(seventh_chord, 11),
+    "B:maj", circshift(major_chord, 11),
+    "D#:min", circshift(minor_chord, 3)
+  )
+
+key_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:maj", circshift(major_key, 6),
+    "Bb:min", circshift(minor_key, 10),
+    "Db:maj", circshift(major_key, 1),
+    "F:min", circshift(minor_key, 5),
+    "Ab:maj", circshift(major_key, 8),
+    "C:min", circshift(minor_key, 0),
+    "Eb:maj", circshift(major_key, 3),
+    "G:min", circshift(minor_key, 7),
+    "Bb:maj", circshift(major_key, 10),
+    "D:min", circshift(minor_key, 2),
+    "F:maj", circshift(major_key, 5),
+    "A:min", circshift(minor_key, 9),
+    "C:maj", circshift(major_key, 0),
+    "E:min", circshift(minor_key, 4),
+    "G:maj", circshift(major_key, 7),
+    "B:min", circshift(minor_key, 11),
+    "D:maj", circshift(major_key, 2),
+    "F#:min", circshift(minor_key, 6),
+    "A:maj", circshift(major_key, 9),
+    "C#:min", circshift(minor_key, 1),
+    "E:maj", circshift(major_key, 4),
+    "G#:min", circshift(minor_key, 8),
+    "B:maj", circshift(major_key, 11),
+    "D#:min", circshift(minor_key, 3)
+  )
+
+twenty_five <-
+  get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+twenty_five %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "")
+
+RISECG <-
+  get_tidy_audio_analysis("69Sy7207dnixZ6w7RSV9Kb") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+RISECG %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "")
+
+
+WARRIORSCG <-
+  get_tidy_audio_analysis("3f4fc8c8unrQeKecmUPEDR") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+WARRIORSCG %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "")
+
+
+
+```
+
+***
+
+Methodology TBA
+
+---
+
+When one looks at the (top) Chordo gram (legends never die) the structure observed in the previous self similarity plot becomes even more validated. At 0:42 of the song the chorus kicks in at lasts till around 1:30,  this is clearly visible in the chordo gram. However after this the song repeats which is also visible. At the end the song ends with piano music which again is visible. Overall the Chordo gram succeeds in visiualizing the song. So how does it compare to RISE and Warriors 2020 (I have not been able to get the titles working yet)?
+
+---
+
+Notible is that Warriors the most recent song has a chance in chords at the start and end, while RISE had one and the start and Legends never die had one at the end. The song also have similar structure as they are all easy to split into four parts. 
+
+Deep analysis with individual chroma grams TBA
+
+
+### Spotify Timbre coefficents
+
+TBA
+
+***
+
+Lets look into playlist wide Timbre.
 
 
 
