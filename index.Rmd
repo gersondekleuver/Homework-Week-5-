@@ -118,7 +118,7 @@ histostats <- df %>%
   geom_hline(yintercept=1) +
   ggtitle("Index of genres listend to by gamers") +
   labs(title="Index of genres listend to by gamers") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+  theme(axis.text.x = element_text(angle=0, vjust=0.6))
 ggplotly(histostats)
 ```
 It might be interesing to look between the diffrence of a popular pop song within the league of legends playist and another popular song from another genre.
@@ -144,7 +144,6 @@ What is a characteristic feature of a gaming playlist? One of the immediate thin
 ---
 
 Spotify has labeled their songs on **Acousticness** with a value ranging from 0 to 1, 0 indicates that a track is not acoustic at all while 1 means it is a fully acoustic track. 
-
 
 The violin plot on the left shows several things:
 
@@ -177,6 +176,8 @@ Another common assumption is that gaming music is generally energetic. How does 
 ---
 
 Spotify provides several audio features which are of interest. **Energy** describes how noicy a track is, **Valence** describes the positiveness  of a song and finally **Danceability** discribes how dancable a song is. All these features range with values between 0 and 1. 
+
+---
 
 In the plot on the left these features were plotted on the left were energy was plotted in the alpha and color. Clearly visible is that the gaming songs are all not too positive with the majority of the tracks on all playlists are below a positivity value of 0.5. Another commonality between the playlists is that most tracks are above rather dancable. The league of legends playlist seems to align with the other playlists in these cases. In energy all these songs are also rather common. 
 
@@ -247,6 +248,8 @@ Lets look at League of legends most iconic songs: Rise, Legends never die, and W
 ---
 
 Lets take a look at both versions and the other tracks using a **chromagram**. A chromagram visualizes the pitches in a track on a certain time. The values range from 0 to 1, with 0 being an absence from a pitches entirely. The chromagram also gives a insight in the structure of a song, since certain pattern of pitches are being repeated mutliple times. 
+
+---
 
 The chromagrams on the left differ in shapes, this is due to the tracks having different lengths.
 An interesting sight is that 3 track of the 4 tracks are mostly played in C and C#. All these songs are more directly made by Riot games, the studio behind League of legends. All 3 were made by the companies music studio "penta kill", while the original version of warriors from 2014 made by Imagine Dragons is very much different than its 2020 release. 
@@ -514,13 +517,107 @@ Deep analysis with individual chroma grams TBA
 
 ### Spotify Timbre coefficents
 
-TBA
+```{r}
+LP2 <-
+  get_playlist_audio_features("",
+    "37i9dQZF1DWVi45nh2EuPP"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+MP2 <-
+  get_playlist_audio_features("",
+    "5AHH67GYsljwoB1q6UGvWg"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+UGP2 <-
+  get_playlist_audio_features("",
+    "37i9dQZF1DWYN9NBqvY7Tx"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+GP2 <-
+  get_playlist_audio_features("",
+    "2cjIvuw4VVOQSeUAZfNiqY"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+jazz <-
+  LP2 %>%
+  mutate(genre = "League of legends playlist") %>%
+  bind_rows(GP2 %>% mutate(genre = "Gaming playlist"),
+            UGP2 %>% mutate(genre = "Ultra Gaming"),
+            MP2 %>% mutate(genre = "Magic Music EDM Gaming Playlist"))
+
+jazz %>%
+  mutate(
+    timbre =
+      map(
+        segments,
+        compmus_summarise,
+        timbre,
+        method = "mean"
+      )
+  ) %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
+  ggplot(aes(x = basis, y = value, fill = genre)) +
+  geom_violin() +
+  ylim(-60, 60) +
+  scale_fill_viridis_d() +
+  scale_x_discrete(expand = c(0.2,0.2)) +
+  labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
+```
 
 ***
 
-Lets look into playlist wide Timbre.
+Lets look into playlist wide **Timbre**. Timbre expresses the overall fidelity of a track. The previous comparisons of accousticness revealed a substantial correlation between the playlists when it comes to accousticness. However the community playlists: [Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d) and [Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96) both deviated slightly from the Spotify playlists. How about the Timbre between the playlists? If the average accousticness of tracks from the community playlists is higher, then it should be expected that the overall timbre of the playlist should also differ, as it emphasizes muscial fidelity. 
+
+---
+
+Using Spotify's timbre analysis is the best option here. Spotify divides each track into 12 timbre coefficents, however the meaning and interpretation of these timbre coefficients is unclear. Futhermore within certain ranges of these coefficents the Gaming playlist contains outliers, thus only results between a range of 60 and -60 are used (EXPLAINATION TBA).
+
+---
+
+Deep analysis to be added
+
+ISSUE cannot maintain samples outside the ylim, datacamp had the solution for this.
 
 
+
+
+### Tempogram
+
+```{r}
+Legends_never_die2 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
+Legends_never_die2 %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+Legends_never_die1 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
+Legends_never_die1 %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+***
+
+Question 
+
+--- 
+
+Method 
+
+--- 
+
+Awnsers
 
 
 Conclusion
