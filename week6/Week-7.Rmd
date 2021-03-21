@@ -181,7 +181,6 @@ Spotify provides several audio features which are of interest. **Energy** descri
 
 In the plot on the left these features were plotted on the left were energy was plotted in the alpha and color. Clearly visible is that the gaming songs are all not too positive with the majority of the tracks on all playlists are below a positivity value of 0.5. Another commonality between the playlists is that most tracks are above rather dancable. The league of legends playlist seems to align with the other playlists in these cases. In energy all these songs are also rather common. 
 
-**TBA**
 
 
 ### What can we tell from the most popular tracks?
@@ -256,11 +255,10 @@ An interesting sight is that 3 track of the 4 tracks are mostly played in C and 
 
 Thus perhaps one could say that most recent gaming music has evolved in terms of C and C# usage.
 
-**TBA**
-
-
 
 ### Structure of Legends never Die
+
+#### Legends never die
 
 ```{r}
 TO <-
@@ -305,24 +303,97 @@ bind_rows(
   facet_wrap(~type) +
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
-  labs(x = "", y = "")
+  labs(x = "", y = "" ) +
+  geom_vline(xintercept=40, colour="white") +
+  geom_text(aes(x=40, label="Intro", y=40), colour="white", angle=90,text=element_text(size=11)) +
+  geom_vline(xintercept=60, colour="red") +
+  geom_text(aes(x=60, label="Chorus", y=20), colour="red", angle=90,text=element_text(size=11)) +
+    geom_vline(xintercept=122, colour="red") +
+  geom_text(aes(x=122, label="Chorus
+", y=20), colour="red", angle=90,text=element_text(size=11))+ 
+    geom_vline(xintercept=177, colour="red") +
+  geom_text(aes(x=177, label="Chorus
+", y=20), colour="red", angle=90,text=element_text(size=11)) +
+    geom_vline(xintercept=209, colour="white") +
+  geom_text(aes(x=209, label="End
+", y=40), colour="white", angle=90,text=element_text(size=11))
+
 
 ```
 
-***
+#### RISE
 
-The previous Chromagrams were interesting as to indicate how the tone layout looks. However it failed to visualize the structure of the songs effectively. One could expect that even though they seem very different the underlying structure might be similar, since their tone usage is also similar and they were published by the same company.
+```{r}
+TE <-
+  get_tidy_audio_analysis("69Sy7207dnixZ6w7RSV9Kb") %>%
+  compmus_align(bars, segments) %>%
+  select(bars) %>%
+  unnest(bars) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "acentre", norm = "manhattan"
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  TE %>%
+    compmus_self_similarity(pitches, "aitchison") %>%
+    mutate(d = d / max(d), type = "Chroma"),
+  TE %>%
+    compmus_self_similarity(timbre, "euclidean") %>%
+    mutate(d = d / max(d), type = "Timbre")
+    
+) %>%
+  mutate() %>%
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "") +
+  geom_vline(xintercept=42, colour="white") +
+  geom_text(aes(x=42, label="Intro / Chorus", y=40), colour="white", angle=90,text=element_text(size=11)) +
+      geom_vline(xintercept=87, colour="red") +
+  geom_text(aes(x=87, label="Chorus
+", y=20), colour="red", angle=90,text=element_text(size=11)) +
+        geom_vline(xintercept=132, colour="red") +
+  geom_text(aes(x=132, label="Chorus
+", y=20), colour="red", angle=90,text=element_text(size=11)) + 
+  
+          geom_vline(xintercept=110, colour="yellow") +
+  geom_text(aes(x=110, label="Bridge
+", y=40), colour="yellow", angle=90,text=element_text(size=11))
+```
+
+---
+
+The previous Chromagrams were interesting as to indicate how the tone layout looks. However it failed to visualize the structure of the songs effectively. One could expect that even though they seem very different the underlying structure might be similar, since their tone usage is also similar and they were published by the same company. Lets take a look at RISE and Legends never die, to assess their structure.
 
 ---
 
 To visualize the structure of a track effectively one could split a track in a visualization of the **chroma** (pitches) and a visualization of the **timbre**.  Timbre is the overall fidelity of sound. 
-The most effective way of plotting these is using a **self-similarity plot**. To create one the track is split in sections, then the pitches in a section are compared to all other sections this is done for all sections. If a section is very similar it is assigned a higher value than one which is very similar.
+The most effective way of plotting these is using a **self-similarity plot**. To create one the track is split in sections, then the pitches in a section are compared to all other sections this is done for all sections. If a section is very similar it is assigned a higher value than one which is very similar. One effect that might occur when using self-similarity plots is checker boarding. This highlights repeating patterns or a shift in structure within a track.
 
 ---
 
-One can immediately see a checkerboard pattern in the timbre. It reveals a lot about the structure, one can see that the track is split into 4 parts in terms of timbre.
-
-**TBA**
+The structure of Legends never die seems very much deliberatly crafted, with the chorus kicking in about every minute, with the first chorus kicking in at exactly 1 minute. Furthermore the intro of the song ends about 41 seconds in, while the outro starts at about 3:30. These numbers gain meaning when compared to RISE. RISE's intro ends at about 42 seconds in which is almost at the same time as Legends never die, futhermore it also has 3 choruses which are each about 45 seconds apart. These conclusions were drawn on the timbre, Looking at the chroma we can see different patterns such as the bridge at 1:50 in RISE clearly which leads to the final chorus. 
 
 ### Chordo gram
 
@@ -414,7 +485,12 @@ key_templates <-
     "D#:min", circshift(minor_key, 3)
   )
 
-twenty_five <-
+```
+
+####
+
+```{r}
+Legends <-
   get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT") %>%
   compmus_align(sections, segments) %>%
   select(sections) %>%
@@ -427,7 +503,7 @@ twenty_five <-
       )
   )
 
-twenty_five %>% 
+Legends %>% 
   compmus_match_pitch_template(
     key_templates,         # Change to chord_templates if descired
     method = "euclidean",  # Try different distance metrics
@@ -439,8 +515,15 @@ twenty_five %>%
   geom_tile() +
   scale_fill_viridis_c(guide = "none") +
   theme_minimal() +
-  labs(x = "Time (s)", y = "")
+  labs(x = "Time (s)", y = "", title="Legends never die") + 
+  geom_vline(xintercept=208, colour="black") +
+  geom_text(aes(x=208, label="Outro
+", y=3), colour="black", angle=90,text=element_text(size=11))
+```
 
+####
+
+```{r}
 RISECG <-
   get_tidy_audio_analysis("69Sy7207dnixZ6w7RSV9Kb") %>%
   compmus_align(sections, segments) %>%
@@ -466,10 +549,16 @@ RISECG %>%
   geom_tile() +
   scale_fill_viridis_c(guide = "none") +
   theme_minimal() +
-  labs(x = "Time (s)", y = "")
+  labs(x = "Time (s)", y = "", title="RISE") +
+  geom_vline(xintercept=10, colour="black") +
+  geom_text(aes(x=10, label="Intro
+", y=3), colour="black", angle=90,text=element_text(size=11))
+```
 
+#### 
 
-WARRIORSCG <-
+```{r}
+WARRIORSCG20 <-
   get_tidy_audio_analysis("3f4fc8c8unrQeKecmUPEDR") %>%
   compmus_align(sections, segments) %>%
   select(sections) %>%
@@ -482,7 +571,8 @@ WARRIORSCG <-
       )
   )
 
-WARRIORSCG %>% 
+
+WARRIORSCG20 %>% 
   compmus_match_pitch_template(
     key_templates,         # Change to chord_templates if descired
     method = "euclidean",  # Try different distance metrics
@@ -494,36 +584,74 @@ WARRIORSCG %>%
   geom_tile() +
   scale_fill_viridis_c(guide = "none") +
   theme_minimal() +
-  labs(x = "Time (s)", y = "")
+  labs(x = "Time (s)", y = "",  title="Warriors 2020") +
+    geom_vline(xintercept=191, colour="black") +
+  geom_text(aes(x=191, label="Outro
+", y=3), colour="black", angle=90,text=element_text(size=11)) +
+      geom_vline(xintercept=11, colour="black") +
+  geom_text(aes(x=11, label="Intro
+", y=3), colour="black", angle=90,text=element_text(size=11)) +
+      geom_vline(xintercept=14, colour="white") +
+  geom_text(aes(x=14, label="Intro by ear
+", y=9), colour="white", angle=90,text=element_text(size=11))
+```
 
+####
 
+```{r}
+WARRIORSCG14 <-
+  get_tidy_audio_analysis("1sWeSMifj6Z6kZyI6z3bRc") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
 
+WARRIORSCG14 %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "", title="Warriors 2014") +
+      geom_vline(xintercept=8, colour="black") +
+  geom_text(aes(x=8, label="Intro
+", y=3), colour="black", angle=90,text=element_text(size=11)) +
+      geom_vline(xintercept=6, colour="white") +
+  geom_text(aes(x=6, label="Intro by ear
+", y=9), colour="white", angle=90,text=element_text(size=11))
 ```
 
 ***
 
-Methodology TBA
+Lets look at chords, the chords of both versions of Warriors, legends never die, and RISE again.
+How good is spotify in detecting the chords and are there some noteworthy characteristics?
 
 ---
 
-When one looks at the (top) Chordo gram (legends never die) the structure observed in the previous self similarity plot becomes even more validated. At 0:42 of the song the chorus kicks in at lasts till around 1:30,  this is clearly visible in the chordo gram. However after this the song repeats which is also visible. At the end the song ends with piano music which again is visible. Overall the Chordo gram succeeds in visiualizing the song. So how does it compare to RISE and Warriors 2020 (I have not been able to get the titles working yet)?
+How do we look at chords? A **chordogram** is the best solution. We can use the chromas to inference which chords are being played.
 
 ---
 
-Notible is that Warriors the most recent song has a chance in chords at the start and end, while RISE had one and the start and Legends never die had one at the end. The song also have similar structure as they are all easy to split into four parts. 
-
-Deep analysis with individual chroma grams TBA
+Notible is that Warriors 2020 the most recent song has a change in chords at the start and end, while RISE had one and the start and Legends never die had one at the end. The chordogram captures them almost perfectly. With RISE being an example where it is perfectly visualized, it detects the start of a drum repetition. However at times the chords seem to differ than can be heard by ear, thus it is not completely accurate. Thought chordograms are all in all suprisingly accurate.
 
 
 ### Spotify Timbre coefficents
 
-```{r}
-LP2 <-
-  get_playlist_audio_features("",
-    "37i9dQZF1DWVi45nh2EuPP"
-  ) %>%
-  slice(1:30) %>%
-  add_audio_analysis()
+####
+
+```{r }
 MP2 <-
   get_playlist_audio_features("",
     "5AHH67GYsljwoB1q6UGvWg"
@@ -542,14 +670,25 @@ GP2 <-
   ) %>%
   slice(1:30) %>%
   add_audio_analysis()
-jazz <-
-  LP2 %>%
-  mutate(genre = "League of legends playlist") %>%
-  bind_rows(GP2 %>% mutate(genre = "Gaming playlist"),
+asP2 <-
+  get_playlist_audio_features("",
+    "1vXfh0fQrN5YQlhFVS6ec5"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+hip <-
+  get_playlist_audio_features("",
+    "4fAWoOyXtEjLn9PT2RLyzO"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+
+
+jazz1 <-
+  bind_rows(
             UGP2 %>% mutate(genre = "Ultra Gaming"),
             MP2 %>% mutate(genre = "Magic Music EDM Gaming Playlist"))
-
-jazz %>%
+jazz1 %>%
   mutate(
     timbre =
       map(
@@ -563,30 +702,82 @@ jazz %>%
   compmus_gather_timbre() %>%
   ggplot(aes(x = basis, y = value, fill = genre)) +
   geom_violin() +
-  ylim(-60, 60) +
+  ylim(-45, 60) +
   scale_fill_viridis_d() +
-  scale_x_discrete(expand = c(0.2,0.2)) +
   labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
 ```
 
+####
+
+```{r }
+jazz2 <-
+  bind_rows(
+            UGP2 %>% mutate(genre = "Ultra Gaming"),
+            asP2 %>% mutate(genre = "Electronic Playlist 2020 "))
+jazz2 %>%
+  mutate(
+    timbre =
+      map(
+        segments,
+        compmus_summarise,
+        timbre,
+        method = "mean"
+      )
+  ) %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
+  ggplot(aes(x = basis, y = value, fill = genre)) +
+  geom_violin() +
+  ylim(-45, 60) +
+  scale_fill_viridis_d() +
+  labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
+```
+
+####
+
+```{r }
+jazz3 <-
+  bind_rows(
+            UGP2 %>% mutate(genre = "Ultra Gaming"),
+            hip %>% mutate(genre = "Rap & Hip Hop Playlist 2021"))
+jazz3 %>%
+  mutate(
+    timbre =
+      map(
+        segments,
+        compmus_summarise,
+        timbre,
+        method = "mean"
+      )
+  ) %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
+  ggplot(aes(x = basis, y = value, fill = genre)) +
+  geom_violin() +
+  ylim(-45, 60) +
+  scale_fill_viridis_d() +
+  labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
+```
+
+####
+
 ***
 
-Lets look into playlist wide **Timbre**. Timbre expresses the overall fidelity of a track. The previous comparisons of accousticness revealed a substantial correlation between the playlists when it comes to accousticness. However the community playlists: [Gaming playlist](https://open.spotify.com/playlist/4bx5c78CAquCWNE4tw1reY?si=8b1700cc937d4d1d) and [Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96) both deviated slightly from the Spotify playlists. How about the Timbre between the playlists? If the average accousticness of tracks from the community playlists is higher, then it should be expected that the overall timbre of the playlist should also differ, as it emphasizes muscial fidelity. 
+Lets look into playlist wide **Timbre**. Timbre expresses the overall fidelity of a track. The previous comparisons of accousticness revealed a substantial correlation between the playlists when it comes to accousticness. However the community playlist [Magic Music EDM Gaming Playlist](https://open.spotify.com/playlist/5AHH67GYsljwoB1q6UGvWg?si=01c590f404924c96)  deviated slightly from the Spotify playlist. How about the Timbre between the playlists? If the average accousticness of tracks from the community playlists is higher, then it should be expected that the overall timbre of the playlist should also differ, as it emphasizes muscial fidelity. 
 
 ---
 
-Using Spotify's timbre analysis is the best option here. Spotify divides each track into 12 timbre coefficents, however the meaning and interpretation of these timbre coefficients is unclear. Futhermore within certain ranges of these coefficents the Gaming playlist contains outliers, thus only results between a range of 60 and -60 are used (EXPLAINATION TBA).
+Using Spotify's timbre analysis is the best option here. Spotify divides each track into 12 timbre coefficents, however the meaning and interpretation of these timbre coefficients is unclear. Futhermore within certain ranges of these coefficents the Gaming playlist contains outliers, thus only results between a range of 60 and -45 are used, this makes the plot more clear and removes the outlies which create a skewed image of the data.
 
 ---
 
-Deep analysis to be added
-
-ISSUE cannot maintain samples outside the ylim, datacamp had the solution for this.
-
+Since we cannot tell what the coeffiencents exactly mean, we can only say that these playlist look a lot alike, however what if we compare it with a playlist which is vaguely similair such as an electronic playlist([Electronic Playlist 2020](https://open.spotify.com/playlist/1vXfh0fQrN5YQlhFVS6ec5?si=469401feffad437c) or a [hip hop playlist](https://open.spotify.com/playlist/4fAWoOyXtEjLn9PT2RLyzO?si=2fbb2deb3ce3404f). Looking at the different playlist a difference is clearly visible at multiple coefficients. This strengthens the notion that gaming music might have more similarities than expected as hip hop and electronic music are linked to gaming music, but there the gaming playlist stand out.
 
 
 
 ### Tempogram
+
+####
 
 ```{r}
 Legends_never_die2 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
@@ -597,6 +788,12 @@ Legends_never_die2 %>%
   scale_fill_viridis_c(guide = "none") +
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic()
+
+```
+
+####
+
+```{r}
 Legends_never_die1 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
 Legends_never_die1 %>%
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
@@ -606,6 +803,8 @@ Legends_never_die1 %>%
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic()
 ```
+
+####
 
 ***
 
