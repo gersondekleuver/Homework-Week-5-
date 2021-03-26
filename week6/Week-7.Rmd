@@ -16,6 +16,10 @@ library(flexdashboard)
 library(compmus)
 library(spotifyr)
 library(plotly)
+library(tidymodels)
+library(ggdendro)
+library(heatmaply)w
+
 
 LP <- get_playlist_audio_features("", "37i9dQZF1DWVi45nh2EuPP")
 GP <- get_playlist_audio_features("", "4bx5c78CAquCWNE4tw1reY")
@@ -817,6 +821,44 @@ Method
 --- 
 
 Awnsers
+
+### Classification
+
+```{r}
+get_conf_mat <- function(fit) {
+  outcome <- .get_tune_outcome_names(fit)
+  fit %>% 
+    collect_predictions() %>% 
+    conf_mat(truth = outcome, estimate = .pred_class)
+}  
+
+get_pr <- function(fit) {
+  fit %>% 
+    conf_mat_resampled() %>% 
+    group_by(Prediction) %>% mutate(precision = Freq / sum(Freq)) %>% 
+    group_by(Truth) %>% mutate(recall = Freq / sum(Freq)) %>% 
+    ungroup() %>% filter(Prediction == Truth) %>% 
+    select(class = Prediction, precision, recall)
+}  
+
+LP5 <- 
+  get_playlist_audio_features("spotify", "37i9dQZF1DWWEcRhUVtL8n")
+GP5 <- get_playlist_audio_features("spotify", "37i9dQZF1DWTujiC7wfofZ")
+UGP5 <- get_playlist_audio_features("spotify", "37i9dQZF1DXaRL7xbcDl7X")
+AI <-
+  bind_rows(
+    LP5 %>% mutate(playlist = "League of legends playlist") %>% slice_head(n = 20),
+    GP5 %>% mutate(playlist = "Indie Party") %>% slice_head(n = 20),
+  ) 
+
+```
+
+
+
+***
+  
+TBA
+
 
 
 Conclusion
