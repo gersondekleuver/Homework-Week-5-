@@ -759,9 +759,8 @@ LOL1 <- Legends_never_die1 %>%
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +
   labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic() +
-  theme(plot.background = element_rect(fill = "transparent")) +
-   geom_hline(yintercept=140, colour="black")
+  theme_classic()  +
+  geom_hline(yintercept=240, colour="black")
 
 subplot(LOL1, LOL2)
 
@@ -772,7 +771,7 @@ subplot(LOL1, LOL2)
 #### RISE
 
 ```{r cache=TRUE}
-RISE2 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
+RISE2 <- get_tidy_audio_analysis("69Sy7207dnixZ6w7RSV9Kb")
 LOL23 <- RISE2 %>%
   tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -780,11 +779,10 @@ LOL23 <- RISE2 %>%
   scale_fill_viridis_c(guide = "none") +
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic() +
-  theme(plot.background = element_rect(fill = "transparent")) +
-   geom_hline(yintercept=280, colour="black")
+  theme(plot.background = element_rect(fill = "transparent")) 
 
 
-RISE1 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
+RISE1 <- get_tidy_audio_analysis("69Sy7207dnixZ6w7RSV9Kb")
 LOL13 <- RISE1 %>%
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -792,28 +790,26 @@ LOL13 <- RISE1 %>%
   scale_fill_viridis_c(guide = "none") +
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic() +
-  theme(plot.background = element_rect(fill = "transparent")) +
-   geom_hline(yintercept=140, colour="black")
+  theme(plot.background = element_rect(fill = "transparent")) 
 
 subplot(LOL13, LOL23)
 
 ```
 
 
-***
+*** 
 
-Question 
 
---- 
 
-Method 
 
---- 
+### What can we say about tempo between playlists?
 
-Awnsers
+####
 
-### 
+Now lets look at de tempo on a playlist scale. How much do the playlist differ from eachtoher and for example an electronics playlist. 
 
+
+####
 
 ```{r cache=TRUE}
 MP2 <-
@@ -848,6 +844,8 @@ hip <-
   add_audio_analysis()
 ```
 
+####
+
 ```{r cache=TRUE}
 
 jazz3131 <-
@@ -861,26 +859,40 @@ jazz3131 <-
 
 jazz3131 %>%
   mutate(
-    timbre =
+    sections =
       map(
-        segments,
-        compmus_summarise,
-        timbre,
-        method = "mean"
+        sections,                                    # sections or segments
+        summarise_at,
+        vars(tempo, loudness, duration),             # features of interest
+        list(section_mean = mean, section_sd = sd)   # aggregation functions
       )
   ) %>%
-  select(genre, timbre) %>%
-  compmus_gather_timbre() %>%
-  ggplot(aes(x = basis, y = value, fill = genre)) +
-  geom_violin() +
-  scale_fill_viridis_d() +
-  labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
+  unnest(sections) %>%
+  ggplot(
+    aes(
+      x = tempo,
+      y = tempo_section_sd,
+      colour = genre,
+      alpha = loudness
+    )
+  ) +
+  geom_point(aes(size = duration / 60)) +
+  geom_rug() +
+  theme_minimal() +
+  ylim(0, 5) +
+  labs(
+    x = "Mean Tempo (bpm)",
+    y = "SD Tempo",
+    colour = "Genre",
+    size = "Duration (min)",
+    alpha = "Volume (dBFS)"
+  )
 ```
 
+####
 
 
-
-### Can we classify gaming music with **unsupervised** classifier?
+### Can we classify gaming music with **K nearest neighbor** classifier?
 
 ```{r cache=TRUE}
 
@@ -996,13 +1008,14 @@ subplot(abs,abc, margin = 0.1)
 
 ***
   
-TBA
-
-### Accuracy of the classification model
+Here you can see a k nearest neighbor classifier trying to identify and classify each playlist after a 5-fold cross-validation. It is not particulairly accurate with it only preforming slightly better than 50/50. This might mean that it is very hard to differentiate the types of music in terms of features, thus meaning that they are very similair.
 
 ```{r cache=TRUE}
 AI_knn %>% get_pr()
 ```
+
+
+
 
 ### What are the most important features to detect gaming music according to a random forest classifier?
 
@@ -1181,11 +1194,22 @@ So can we take a look at speechiness?
 
 ```{r cache=TRUE}
 
-dasddadd <- XP013 %>% 
-  arrange(index) %>%
-  ggplot(aes(x = playlist,fill= playlist)) +
-  geom_boxplot() +
-  coord_flip() 
+hip <- get_playlist_audio_features("", "4fAWoOyXtEjLn9PT2RLyzO")
+electronic <- get_playlist_audio_features("", "5CvETxDs2E5rQeNji0LPaA")
+XP014 <-
+  bind_rows(
+    LP %>% mutate(playlist = "League of legends"),
+    GP %>% mutate(playlist = "Gaming"),
+    MP %>% mutate(playlist = "Magic Music EDM Gaming"),
+    UGP %>% mutate(playlist = "Ultra Gaming"),
+    hip %>% mutate(playlist = "Rap & Hip Hop Playlist 2021"),
+    electronic %>% mutate(playlist = "Electronic Playlist 2020")
+  )
+
+
+dasddadd <- XP014 %>% 
+  ggplot(aes(x = speechiness, y=playlist ,fill= playlist)) +
+  geom_boxplot()
 
 ggplotly(dasddadd)
 
@@ -1194,9 +1218,10 @@ ggplotly(dasddadd)
 
 ***
 
+When looking at the speechiness attribute from spotify one cannot see the same direct similairity between gaming music as one can see when looking at the timbre coefficients. 
 
 
 Conclusion
 ============
 
-More text TBA
+In conclusion we cannot differnetiate too well between gaming music and electronic music. However one can look at distinct properties when trying to descripte a piece of music made by riot games or other gaming music. Furthermre the range of what can been seen as gaming music is very large with both hiphop and electronic music blending in.
