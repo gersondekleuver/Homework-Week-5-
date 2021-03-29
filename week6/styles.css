@@ -1,0 +1,51 @@
+.section.level1.vertical-layout-fill.dashboard-column-orientation {
+  background-image: url('C:\Users\kleuv\Documents\Homework-Week-5-\LeagueBanner.png');
+  background-size: 100%;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+#sidebar.section.sidebar {
+  background-color: rgba(255, 255, 255, 1)   /* 35% opaque white */;
+}
+
+.plot-container.plotly {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-svg {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+svg {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background-image: url('C:\Users\kleuv\Documents\Homework-Week-5-\LeagueBanner.png');
+  background-size: 100
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.storyboard-nav .sbframelist ul li {
+  background-image: url('C:\Users\kleuv\Documents\Homework-Week-5-\LoL.png');
+  background-size: 100%;
+
+}
+
+.navbar-inverse {
+  background-color: rgb(0, 0, 204); 
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+  color: rgb(255, 255, 255); 
+  background-color: rgba(153, 204, 255,0.5)
+  
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:hover {
+  background-color: rgba(153, 204, 255,0.5); 
+  color: rgb(255, 255, 255); 
+}
+
+
+
