@@ -1209,7 +1209,7 @@ XP014 <-
 
 dasddadd <- XP014 %>% 
   ggplot(aes(x = speechiness, y=playlist ,fill= playlist)) +
-  geom_boxplot()
+  geom_point()
 
 ggplotly(dasddadd)
 
