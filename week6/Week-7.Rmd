@@ -7,6 +7,7 @@ output:
     theme: flatly
     highlight: monochrome
     css: styles.css
+    logo: 'C:\Users\kleuv\Documents\Homework-Week-5-\oopga.png'
   
 ---
 
@@ -92,6 +93,14 @@ SideBar {.sidebar}
 * Likes: 22.233
 
 * By: Spotify
+
+
+```{html}
+<object data="https://open.spotify.com/embed/playlist/37i9dQZF1DWVi45nh2EuPP"> width="260" height="260" style="display:block;margin:auto">
+  <embed src="https://open.spotify.com/embed/playlist/37i9dQZF1DWVi45nh2EuPP" width="260" height="260"> </embed>
+</object>
+  
+```
 
 Column
 --------------
@@ -254,6 +263,14 @@ ggarrange(XP3,XP5,XP2,XP6)
 
 ***
 
+If we look at the several different features, we cannot draw too many conclusions. However there are some notible observations:
+
+* The league of legends playlist has a much higher average instrumentalness
+
+* he community playlists seem to both be more energetic, louder and of higher tempo than the playlists published by spotify.
+
+
+while looking the instrumentalness we can clearly see that the league of legends playlist is an outlier. This is probably becaus of songs such as Warriors 2020. Which was produced with a large orchestra. And are made for both tournament usage and as promototional songs.
 
 
 ### What can we tell from the most popular tracks?
@@ -352,7 +369,7 @@ TO <-
         method = "mean"
       )
   )
-bind_rows(
+b2 <- bind_rows(
   TO %>%
     compmus_self_similarity(pitches, "aitchison") %>%
     mutate(d = d / max(d), type = "Chroma"),
@@ -411,7 +428,7 @@ TE <-
         method = "mean"
       )
   )
-bind_rows(
+b1 <- bind_rows(
   TE %>%
     compmus_self_similarity(pitches, "aitchison") %>%
     mutate(d = d / max(d), type = "Chroma"),
@@ -449,6 +466,8 @@ bind_rows(
   geom_text(aes(x=110, label="Bridge
 ", y=40), colour="yellow", angle=90,text=element_text(size=11)) +
   theme(plot.background = element_rect(fill = "transparent")) 
+
+ggarrange(b1, b2)
 
 ```
 
@@ -716,9 +735,9 @@ Notible is that Warriors 2020 the most recent song has a change in chords at the
 
 
 
-### Tempogram
+### What can we say about the tempo?
 
-
+#### Legends never die
 
 ```{r cache=TRUE}
 Legends_never_die2 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
@@ -750,6 +769,37 @@ subplot(LOL1, LOL2)
 
 
 
+#### RISE
+
+```{r cache=TRUE}
+RISE2 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
+LOL23 <- RISE2 %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic() +
+  theme(plot.background = element_rect(fill = "transparent")) +
+   geom_hline(yintercept=280, colour="black")
+
+
+RISE1 <- get_tidy_audio_analysis("1FpVJ7HpZInE2GvhVE2TwT")
+LOL13 <- RISE1 %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic() +
+  theme(plot.background = element_rect(fill = "transparent")) +
+   geom_hline(yintercept=140, colour="black")
+
+subplot(LOL13, LOL23)
+
+```
+
+
 ***
 
 Question 
@@ -762,7 +812,75 @@ Method
 
 Awnsers
 
-### Classification
+### 
+
+
+```{r cache=TRUE}
+MP2 <-
+  get_playlist_audio_features("",
+    "5AHH67GYsljwoB1q6UGvWg"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+UGP2 <-
+  get_playlist_audio_features("",
+    "37i9dQZF1DWYN9NBqvY7Tx"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+GP2 <-
+  get_playlist_audio_features("",
+    "2cjIvuw4VVOQSeUAZfNiqY"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+asP2 <-
+  get_playlist_audio_features("",
+    "1vXfh0fQrN5YQlhFVS6ec5"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+hip <-
+  get_playlist_audio_features("",
+    "4fAWoOyXtEjLn9PT2RLyzO"
+  ) %>%
+  slice(1:30) %>%
+  add_audio_analysis()
+```
+
+```{r cache=TRUE}
+
+jazz3131 <-
+  bind_rows(
+            UGP2 %>% mutate(genre = "Ultra Gaming"),
+            MP2 %>% mutate(genre = "Magic Music EDM Gaming Playlist"),
+            hip %>% mutate(genre = "Rap & Hip Hop Playlist 2021"),
+            asP2 %>% mutate(genre = "Electronic Playlist 2020 "))
+            
+
+
+jazz3131 %>%
+  mutate(
+    timbre =
+      map(
+        segments,
+        compmus_summarise,
+        timbre,
+        method = "mean"
+      )
+  ) %>%
+  select(genre, timbre) %>%
+  compmus_gather_timbre() %>%
+  ggplot(aes(x = basis, y = value, fill = genre)) +
+  geom_violin() +
+  scale_fill_viridis_d() +
+  labs(x = "Spotify Timbre Coefficients", y = "", fill = "Genre")
+```
+
+
+
+
+### Can we classify gaming music with **unsupervised** classifier?
 
 ```{r cache=TRUE}
 
@@ -865,9 +983,15 @@ AI_knn <-
     control = control_resamples(save_pred = TRUE)
   )
 
-AI_knn %>% get_conf_mat() %>% autoplot(type = "mosaic")
+```
 
-AI_knn %>% get_conf_mat() %>% autoplot(type = "heatmap")
+```{r cache=TRUE}
+
+abs <- AI_knn %>% get_conf_mat() %>% autoplot(type = "mosaic") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+abc <- AI_knn %>% get_conf_mat() %>% autoplot(type = "heatmap") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+subplot(abs,abc, margin = 0.1)
 ```
 
 ***
@@ -880,7 +1004,7 @@ TBA
 AI_knn %>% get_pr()
 ```
 
-### Most important features to detect gaming music
+### What are the most important features to detect gaming music according to a random forest classifier?
 
 ```{r cache=TRUE, echo=FALSE}
 forest_model <-
@@ -919,7 +1043,7 @@ Can we use these features to identify gaming music? We could perhaps compare pla
 
 
 
-### Spotify Timbre coefficents
+### Can the spotify **timbre coefficents** be used to identify gaming music?
 
 ####
 
@@ -962,8 +1086,10 @@ hip <-
   ) %>%
   slice(1:30) %>%
   add_audio_analysis()
+```
 
 
+```{r cache=TRUE}
 jazz1 <-
   bind_rows(
             UGP2 %>% mutate(genre = "Ultra Gaming"),
@@ -1047,9 +1173,26 @@ jazz3 %>%
 
 ***
 
-Looking at the different playlist a difference is clearly visible at multiple lower coefficients . This strengthens the notion that gaming music might have more similarities than expected as hip hop and electronic music are linked to gaming music, but there the gaming playlist stand out.
+Looking at the different playlist a difference is clearly visible at the coefficients c5 c6 and c11 this corresponds with the classifiers predictions.
+So can we take a look at speechiness?
 
 
+### Can **speechiness** be used to gaming music?
+
+```{r cache=TRUE}
+
+dasddadd <- XP013 %>% 
+  arrange(index) %>%
+  ggplot(aes(x = playlist,fill= playlist)) +
+  geom_boxplot() +
+  coord_flip() 
+
+ggplotly(dasddadd)
+
+
+```
+
+***
 
 
 
